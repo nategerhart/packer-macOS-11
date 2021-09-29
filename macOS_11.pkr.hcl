@@ -4,12 +4,12 @@ packer {
 
 variable "iso_file_checksum" {
   type    = string
-  default = "file:install_bits/macOS_1120_installer.shasum"
+  default = "file:install_bits/macOS_1160_installer.shasum"
 }
 
 variable "iso_filename" {
   type    = string
-  default = "install_bits/macOS_1120_installer.iso"
+  default = "install_bits/macOS_1160_installer.iso"
 }
 
 variable "user_password" {
@@ -34,12 +34,12 @@ variable "ram_gb" {
 
 variable "xcode" {
   type    = string
-  default = "install_bits/Xcode_12.4.xip"
+  default = "install_bits/Xcode_13.xip"
 }
 
 variable "xcode_cli" {
   type    = string
-  default = "install_bits/Command_Line_Tools_for_Xcode_12.4.dmg"
+  default = "install_bits/Command_Line_Tools_for_Xcode_13.dmg"
 }
 
 variable "board_id" {
@@ -83,7 +83,7 @@ variable "boot_keygroup_interval_iso" {
   default = "4s"
 }
 
-# Full build 
+# Full build
 build {
   name    = "full"
   sources = ["sources.vmware-iso.macOS_11"]

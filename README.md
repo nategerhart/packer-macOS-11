@@ -1,6 +1,6 @@
 # packer-macOS-11
 
-This a packer template for macOS 11 built on VMware fusion 12. It's created using the newer packer hcl2 syntax which is relatively new. 
+This a packer template for macOS 11 built on VMware fusion 12. It's created using the newer packer hcl2 syntax which is relatively new.
 
 ## Discussion thread for usage questions
 Please see this hashicorp discuss thread for general usage questions & answers.
@@ -10,7 +10,7 @@ Please see this hashicorp discuss thread for general usage questions & answers.
 ## Key capabilities
 * [scripts/buildprerequs.sh](scripts/buildprerequs.sh) creates a macOS installer .iso
 * Using voiceover and boot commands to open terminal.app !!
-* Downloading .pkg and script payloads to the recovery environment 
+* Downloading .pkg and script payloads to the recovery environment
 * Running the payload scripts that handle the install process
 * packer user creation and autologin
 * Clearing setup screens
@@ -33,30 +33,30 @@ After cloning this repo you must pull down the submodules by running the followi
     git submodule update --init
 
 ## Prerequisite installer bits
-I have imported two projects as submodules to create the needed macOS installer .iso. Running the [scripts/buildprerequs.sh](scripts/buildprerequs.sh) will call those to generate it. If you have a macOS 11 install .iso from some other method that will work as well. 
+I have imported two projects as submodules to create the needed macOS installer .iso. Running the [scripts/buildprerequs.sh](scripts/buildprerequs.sh) will call those to generate it. If you have a macOS 11 install .iso from some other method that will work as well.
 
 Thanks to all contributors of the following project that are imported as submodules:
 
 * [create_macos_vm_install_dmg](https://github.com/rtrouton/create_macos_vm_install_dmg)
 * [macadmin-scripts](https://github.com/grahampugh/macadmin-scripts)
 
-With the customize build I'm installing Xcode 12.4. Grab both the latest Xcode .xip and matching command line tools installer dmg from [developer.apple.com](https://developer.apple.com). Toss them into the `install_bits` directory. 
+With the customize build I'm installing Xcode 12.4. Grab both the latest Xcode .xip and matching command line tools installer dmg from [developer.apple.com](https://developer.apple.com). Toss them into the `install_bits` directory.
 
 Here is what your `install_bits` directory should look like to successfully build the full image:
 ```
 install_bits/
-├── Command_Line_Tools_for_Xcode_12.4.dmg
-├── Xcode_12.4.xip
+├── Command_Line_Tools_for_Xcode_13.dmg
+├── Xcode_13.xip
 ├── dmg
-├── macOS_1120_installer.iso
-└── macOS_1120_installer.shasum
+├── macOS_1160_installer.iso
+└── macOS_1160_installer.shasum
 ```
 NOTE: Filenames will change as newer versions are released
 
 ## Named builds
-This template has three named builds `base`, `customize`, and `full`. The idea here is to split the lengthy process of macOS installation (baking the image) from the customization (frying the image). The `base` build does the os install with the vmware-iso builder and `customize` takes the output VM from that and customizes it. Re-running the customization quickly gets allows for quicker testing of that phase. The `full` build does all the steps at once and if you're not testing the customizations likely what you want to use. 
+This template has three named builds `base`, `customize`, and `full`. The idea here is to split the lengthy process of macOS installation (baking the image) from the customization (frying the image). The `base` build does the os install with the vmware-iso builder and `customize` takes the output VM from that and customizes it. Re-running the customization quickly gets allows for quicker testing of that phase. The `full` build does all the steps at once and if you're not testing the customizations likely what you want to use.
 
-### Building the full image 
+### Building the full image
 Builds the VM with all the options including Xcode
 
     packer build -force -only=full.vmware-iso.macOS_11 macOS_11.pkr.hcl
@@ -77,17 +77,17 @@ This template uses input variables for a bunch of customizable values. Run packe
     packer inspect macOS_11.pkr.hcl
 
 ## Adjust resources
-If you need to adjust the cpu and RAM requirements to match your available resources. The variables can be edited in the template directly or passed on the cli. 
+If you need to adjust the cpu and RAM requirements to match your available resources. The variables can be edited in the template directly or passed on the cli.
 
     packer build -force -only=full.vmware-iso.macOS_11 -var cpu_count="2" -var ram_gb="6" macOS_11.pkr.hcl
 
 ## Adjust timing
-The process for starting the installer is very dependant on timing, unfortunately. If you run into unexpected results when the installer is starting up you may need to adjust the timing to match your system. Each release of the OS and specific hardware running the build can change the optimal timing. When in doubt add some time to these values to see if that fixes the issue. 
+The process for starting the installer is very dependant on timing, unfortunately. If you run into unexpected results when the installer is starting up you may need to adjust the timing to match your system. Each release of the OS and specific hardware running the build can change the optimal timing. When in doubt add some time to these values to see if that fixes the issue.
 
     packer build -force -only=full.vmware-iso.macOS_11 -var boot_key_interval_iso="400ms" -var boot_wait_iso="400s" -var boot_keygroup_interval_iso="5s" macOS_11.pkr.hcl
 
 ### Username & Password
-The build process created a packer user with UID 502. It's recommended to login with that account and create a new user with the appropriate password when you start using the VM. 
+The build process created a packer user with UID 502. It's recommended to login with that account and create a new user with the appropriate password when you start using the VM.
 
     Username: packer
     Password: packer
@@ -109,10 +109,10 @@ Apple has been seeding pre-release builds as software update only more often. To
     packer build -force -only=full.vmware-iso.macOS_11 -var seeding_program="DeveloperSeed" macOS_11.pkr.hcl
 
 ### Apple GPU support on Big Sur hosts
-If the host system is running macOS 11.x enabling the virtualized GPU provides a dramatic speedup of the GUI. This version of the template uses a post-processor to add the needed vmx config if the host OS is macOS 11.x . 
+If the host system is running macOS 11.x enabling the virtualized GPU provides a dramatic speedup of the GUI. This version of the template uses a post-processor to add the needed vmx config if the host OS is macOS 11.x .
 
 ### Use downloaded version of VMware tools .iso
-Sometimes newer versions of VMware tools are available from vmware.com . Check https://my.vmware.com/en/web/vmware/downloads/info/slug/datacenter_cloud_infrastructure/vmware_tools/11_x . If you want to use an iso besides the one included with VMware fusion then update the variable tools_path 
+Sometimes newer versions of VMware tools are available from vmware.com . Check https://my.vmware.com/en/web/vmware/downloads/info/slug/datacenter_cloud_infrastructure/vmware_tools/11_x . If you want to use an iso besides the one included with VMware fusion then update the variable tools_path
 ```
 -var tools_path="install_bits/darwin.iso"
 ```
